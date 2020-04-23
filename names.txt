@@ -1,1 +1,2 @@
-[{'id': 2, 'name': 'Angola', 'capital': 'Luanda', 'population': 25868000, 'alpha2code': 'AO'}][{'id': 1, 'name': 'Algeria', 'capital': 'Algiers', 'population': 40400000, 'alpha2code': 'DZ'}]
+[{'id': 1, 'name': 'Algeria', 'capital': 'Algiers', 'population': 40400000, 'alpha2code': 'DZ'}]
+[{'id': 2, 'name': 'Angola', 'capital': 'Luanda', 'population': 25868000, 'alpha2code': 'AO'}]
