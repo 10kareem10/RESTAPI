@@ -11,20 +11,20 @@ app.config["DEBUG"] = True
 
 countries = [
     {'id':0,
-     'name': 'Afghanistan',
-     'capital': 'Kabul',
-     'population': 27657145,
-     'alpha2code': 'AF'},
+     'name':'Afghanistan',
+     'capital':'Kabul',
+     'population':27657145,
+     'alpha2code':'AF'},
     {'id':1,
-     'name': 'Algeria',
-     'capital': 'Algiers',
-     'population': 40400000,
-     'alpha2code': 'DZ'},
+     'name':'Algeria',
+     'capital':'Algiers',
+     'population':40400000,
+     'alpha2code':'DZ'},
     {'id':2,
-     'name': 'Angola',
-     'capital': 'Luanda',
-     'population': 25868000,
-     'alpha2code': 'AO'}
+     'name':'Angola',
+     'capital':'Luanda',
+     'population':25868000,
+     'alpha2code':'AO'}
 ]
 def checkall():
     readme=open("all.txt",'r')
@@ -75,8 +75,62 @@ def checkid(id):
                 return matchedLine
                 break
 
+def writepop(results=[]):
+    saveFile = open('population.txt', 'a')
+    saveFile.write(str(results))
+    saveFile.write("\n")
+    saveFile.close()
 
+def checkpop(population):
+    stringToMatch = ': '+str(population)
+    matchedLine = ''
 
+    # get line
+    with open('population.txt', 'r') as file:
+        for line in file:
+            if stringToMatch in line:
+                matchedLine = line
+                print(matchedLine)
+                return matchedLine
+                break
+
+def writecap(results=[]):
+    saveFile = open('capitals.txt', 'a')
+    saveFile.write(str(results))
+    saveFile.write("\n")
+    saveFile.close()
+
+def checkcap(capital):
+    stringToMatch = capital
+    matchedLine = ''
+
+    # get line
+    with open('capitals.txt', 'r') as file:
+        for line in file:
+            if stringToMatch in line:
+                matchedLine = line
+                print(matchedLine)
+                return matchedLine
+                break
+
+def writename(results=[]):
+    saveFile = open('names.txt', 'a')
+    saveFile.write(str(results))
+    saveFile.write("\n")
+    saveFile.close()
+
+def checkname(name):
+    stringToMatch = name
+    matchedLine = ''
+
+    # get line
+    with open('names.txt', 'r') as file:
+        for line in file:
+            if stringToMatch in line:
+                matchedLine = line
+                print(matchedLine)
+                return matchedLine
+                break
 
 #checkid(id)
 
@@ -123,13 +177,15 @@ def api_population():
         return "Error: No population field provided. Please specify a population ."
     results = []
 
-    saveFile = open('population.txt', 'a')
-    for country in countries:
-        if country['population'] == population:
-            results.append(country)
-            saveFile.write(str(results))
-            saveFile.close()
-    return jsonify(results)
+    if checkpop(population) is None:
+        for country in countries:
+            if country['population'] == population:
+                results.append(country)
+                writepop(results)
+                return jsonify(results)
+    else:
+        print("returned from cache")
+        return checkpop(population)
 
 @app.route('/api/v1/resources/countries/capital', methods=['GET'])
 def api_capital():
@@ -139,13 +195,15 @@ def api_capital():
         return "Error: No capital field provided. Please specify a capital."
     results = []
 
-    saveFile = open('capitals.txt', 'a')
-    for country in countries:
-        if country['capital'] == capital:
-            results.append(country)
-            saveFile.write(str(results))
-            saveFile.close()
-    return jsonify(results)
+    if checkcap(capital) is None:
+        for country in countries:
+            if country['capital'] == capital:
+                results.append(country)
+                writecap(results)
+                return jsonify(results)
+    else:
+        print("returned from cache")
+        return checkcap(capital)
 
 @app.route('/api/v1/resources/countries/name', methods=['GET'])
 def api_name():
@@ -156,13 +214,16 @@ def api_name():
         return "Error: No name field provided. Please specify a name."
     results = []
 
-    saveFile = open('names.txt', 'a')
-    for country in countries:
-        if country['name'] == name:
-            results.append(country)
-            saveFile.write(str(results))
-            saveFile.close()
-    return jsonify(results)
+    if checkname(name) is None:
+        for country in countries:
+            if country['name'] == name:
+                results.append(country)
+                writename(results)
+                return jsonify(results)
+    else:
+        print("returned from cache")
+        return checkname(name)
+
 
 
 app.run()
