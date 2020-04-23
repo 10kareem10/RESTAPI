@@ -207,9 +207,12 @@ def api_capital():
 
 @app.route('/api/v1/resources/countries/name', methods=['GET'])
 def api_name():
+    x=True
 
     if 'name' in request.args:
         name = str(request.args['name'])
+        print(request.args)
+
     else:
         return "Error: No name field provided. Please specify a name."
     results = []
@@ -223,7 +226,6 @@ def api_name():
     else:
         print("returned from cache")
         return checkname(name)
-
 
 
 app.run()
