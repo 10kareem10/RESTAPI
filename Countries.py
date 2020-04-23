@@ -1,8 +1,13 @@
 import flask
+import os
+import pickle
+import mmap
+
 from flask import request, jsonify
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
+
 
 countries = [
     {'id':0,
@@ -21,6 +26,59 @@ countries = [
      'population': 25868000,
      'alpha2code': 'AO'}
 ]
+def checkall():
+    readme=open("all.txt",'r')
+    x=[]
+    count=0
+    all=readme.read()
+    readme.close()
+    #print(all)
+    return all
+
+#checkall()
+def get_size(file_path):
+    if os.stat(file_path).st_size == 0:
+        return False
+    else:
+        return True
+def countlines(fname):
+    count = 0
+    with open(fname, 'r') as f:
+        for line in f:
+            count += 1
+    print("Total number of lines is:", count)
+
+def write_all():
+    results=[]
+    saveFile = open('all.txt', 'w')
+    results.append(countries)
+    saveFile.write(str(results))
+    saveFile.write("\n")
+    saveFile.close()
+
+def writeid(results=[]):
+    saveFile = open('id.txt', 'a')
+    saveFile.write(str(results))
+    saveFile.write("\n")
+    saveFile.close()
+
+def checkid(id):
+    stringToMatch = ': '+str(id)
+    matchedLine = ''
+
+    # get line
+    with open('id.txt', 'r') as file:
+        for line in file:
+            if stringToMatch in line:
+                matchedLine = line
+                print(matchedLine)
+                return matchedLine
+                break
+
+
+
+
+#checkid(id)
 
 
 @app.route('/', methods=['GET'])
@@ -29,7 +87,15 @@ def home():
 
 @app.route('/api/v1/resources/countries/all', methods=['GET'])
 def api_all():
-    return jsonify(countries)
+
+    if get_size("all.txt")== False:
+         write_all()
+         return jsonify(countries)
+    else:
+         print("returned from cache")
+         print(checkall())
+         return checkall()
+
 
 @app.route('/api/v1/resources/countries', methods=['GET'])
 def api_id():
@@ -39,13 +105,15 @@ def api_id():
         return "Error: No id field provided. Please specify an id."
     results = []
 
-    saveFile = open('id.txt', 'a')
-    for country in countries:
+    if checkid(id) is None:
+      for country in countries:
         if country['id'] == id:
             results.append(country)
-            saveFile.write(str(results))
-            saveFile.close()
-    return jsonify(results)
+            writeid(results)
+            return jsonify(results)
+    else :
+         print("returned from cache")
+         return checkid(id)
 
 @app.route('/api/v1/resources/countries/population', methods=['GET'])
 def api_population():
